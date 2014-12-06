@@ -39,7 +39,7 @@ class JagglateTemplate implements Template {
     }
 
     @Override
-    public Writable make(@SuppressWarnings("rawtypes") Map binding) {
+    public Writable make(@SuppressWarnings("rawtypes") final Map binding) {
         return new Writable() {
             /**
              * Write the template document with the set binding applied to the writer.

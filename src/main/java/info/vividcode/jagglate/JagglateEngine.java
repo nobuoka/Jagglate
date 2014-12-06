@@ -56,7 +56,7 @@ public class JagglateEngine {
         return new JagglateEngine(parentClassLoader, fileLoader);
     }
 
-    private JagglateEngine(ClassLoader parentClassLoader, JagglateFileLoader fileLoader) {
+    private JagglateEngine(final ClassLoader parentClassLoader, final JagglateFileLoader fileLoader) {
         final TemplateClassLoader templateClassLoader = AccessController.doPrivileged(new PrivilegedAction<TemplateClassLoader>() {
             @Override
             public TemplateClassLoader run() {
