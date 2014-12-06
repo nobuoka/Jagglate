@@ -1,0 +1,12 @@
+apply plugin: 'java'
+
+version = '0.1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile 'org.codehaus.groovy:groovy:2.3.+'
+    compile 'org.codehaus.groovy:groovy-templates:2.3.+'
+}
