@@ -24,7 +24,6 @@ import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.regex.Matcher;
@@ -53,49 +52,6 @@ class TemplateClassLoader extends GroovyClassLoader {
     static String classNamePrefix = "templates.";
     static String pathPrefix = "";
 
-    public static String camelize(String str) {
-        StringBuilder sb = new StringBuilder();
-        Pattern topUnderScore = Pattern.compile("\\A_+");
-        Matcher m = topUnderScore.matcher(str);
-        if (m.find()) {
-            sb.append(str.substring(0, m.end()));
-            str = str.substring(m.end());
-        }
-
-        Pattern firstLetterPattern = Pattern.compile("(?:\\A|_)([a-z])");
-        m = firstLetterPattern.matcher(str);
-        int pos = 0;
-        while (m.find()) {
-            sb.append(str.substring(pos, m.start()));
-            sb.append(m.group(1).toUpperCase(Locale.US));
-            pos = m.end();
-        }
-        sb.append(str.substring(pos));
-        return sb.toString();
-    }
-
-    public static String underscore(String str) {
-        StringBuilder sb = new StringBuilder();
-        Pattern topUnderScore = Pattern.compile("\\A_+");
-        Matcher m = topUnderScore.matcher(str);
-        if (m.find()) {
-            sb.append(str.substring(0, m.end()));
-            str = str.substring(m.end());
-        }
-
-        Pattern capitalLetterPattern = Pattern.compile("[A-Z]");
-        m = capitalLetterPattern.matcher(str);
-        int pos = 0;
-        while (m.find()) {
-            sb.append(str.substring(pos, m.start()));
-            if (m.start() != 0) sb.append('_');
-            sb.append(m.group().toLowerCase(Locale.US));
-            pos = m.end();
-        }
-        sb.append(str.substring(pos));
-        return sb.toString();
-    }
-
     public static String convertPathToClassName(String path) {
         String prefix = path.substring(0, pathPrefix.length());
         if (!prefix.equals(pathPrefix)) {
@@ -113,7 +69,7 @@ class TemplateClassLoader extends GroovyClassLoader {
         boolean isFirst = true;
         for (String f : ff) {
             if (!isFirst) sb.append('$');
-            sb.append(camelize(f));
+            sb.append(TemplateClasses.camelize(f));
             isFirst = false;
         }
         return classNamePrefix + sb.toString();
@@ -136,7 +92,7 @@ class TemplateClassLoader extends GroovyClassLoader {
         boolean isFirst = true;
         for (String f : ff) {
             if (!isFirst) sb.append('.');
-            sb.append(underscore(f));
+            sb.append(TemplateClasses.underscore(f));
             isFirst = false;
         }
         return pathPrefix + sb.toString();
