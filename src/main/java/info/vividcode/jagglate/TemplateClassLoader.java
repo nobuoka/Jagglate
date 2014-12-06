@@ -3,11 +3,7 @@ package info.vividcode.jagglate;
 import groovy.lang.GroovyClassLoader;
 import groovy.transform.CompileStatic;
 
-import java.io.BufferedInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -130,10 +126,9 @@ class TemplateClassLoader extends GroovyClassLoader {
         return pathPrefix + sb.toString();
     }
 
-    private Charset mTemplateSourceFileCharset = StandardCharsets.UTF_8;
-
-    public TemplateClassLoader(ClassLoader parentClassLoader) {
+    public TemplateClassLoader(ClassLoader parentClassLoader, JagglateFileLoader fileLoader) {
         super(parentClassLoader);
+        mTemplateFileLoader = fileLoader;
     }
 
     @SuppressWarnings("unchecked")
@@ -164,22 +159,7 @@ class TemplateClassLoader extends GroovyClassLoader {
         return super.findClass(name);
     }
 
-    private final JagglateFileLoader mTemplateFileLoader = new JagglateFileLoader() {
-        @Override
-        public String load(String path) throws IOException {
-            try (BufferedInputStream bis = new BufferedInputStream(getResourceAsStream(path))) {
-                byte[] bb = new byte[1024];
-                ByteArrayOutputStream out = new ByteArrayOutputStream();
-                int count;
-                while ((count = bis.read(bb)) != -1) {
-                    out.write(bb, 0, count);
-                }
-                return new String(out.toByteArray(), mTemplateSourceFileCharset);
-            }
-            //byte[] bytes = Files.readAllBytes(Paths.get(path));
-            //return new String(bytes, mTemplateSourceFileCharset);
-        }
-    };
+    private final JagglateFileLoader mTemplateFileLoader;
 
     public String loadAndParseTemplateFromPath(
             String templatePath, List<Entry<String, String>> templateArgTypesDest
