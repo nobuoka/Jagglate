@@ -16,6 +16,9 @@ limitations under the License.
 
 package info.vividcode.jagglate;
 
+import info.vividcode.jagglate.TemplateInstructionProcessor.InvalidInstruction;
+import info.vividcode.jagglate.TemplateInstructionProcessor.InvalidInstruction.Type;
+
 import java.io.PrintWriter;
 import java.util.Arrays;
 import java.util.Collections;
@@ -48,11 +51,11 @@ public class TemplateInstructionProcessorTest {
     }
 
     @Test
-    public void process_include() {
+    public void process_include() throws InvalidInstruction {
         final TemplateInstructionProcessor proc =
                 new TemplateInstructionProcessor(new MockClassLoader());
         class TestProc {
-            void proc(List<String> paramNames, String instructionParams, String expectedParams) {
+            void proc(List<String> paramNames, String instructionParams, String expectedParams) throws InvalidInstruction {
                 MockTemplate.PARAM_NAMES = paramNames;
                 StringBuilder sb = new StringBuilder();
                 proc.process(sb, "include \"mock_template\"" + instructionParams);
@@ -70,6 +73,39 @@ public class TemplateInstructionProcessorTest {
         testProc.proc(Arrays.asList("goodArg", "numTests", "pp"),
                 ", numTests: 3, goodArg: 'yeah', pp: null",
                 ", 'yeah', 3, null");
+    }
+
+    @Test
+    public void process_invalidInstruction() throws InvalidInstruction {
+        final TemplateInstructionProcessor proc =
+                new TemplateInstructionProcessor(new MockClassLoader());
+        {
+            StringBuilder sb = new StringBuilder();
+            try {
+                proc.process(sb, "unknownInstruction \"mock_template\"");
+                fail("Exception not occurred");
+            } catch (InvalidInstruction e) {
+                assertEquals(Type.UNKNOWN_INSTRUCTION, e.type);
+            }
+        }
+        {
+            StringBuilder sb = new StringBuilder();
+            try {
+                proc.process(sb, "include \"mock_template");
+                fail("Exception not occurred");
+            } catch (InvalidInstruction e) {
+                assertEquals(Type.COMPILE_ERROR, e.type);
+            }
+        }
+        {
+            StringBuilder sb = new StringBuilder();
+            try {
+                proc.process(sb, "include }");
+                fail("Exception not occurred");
+            } catch (InvalidInstruction e) {
+                assertEquals(Type.COMPILE_ERROR, e.type);
+            }
+        }
     }
 
 }

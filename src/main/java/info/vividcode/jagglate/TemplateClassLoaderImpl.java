@@ -18,6 +18,7 @@ package info.vividcode.jagglate;
 
 import groovy.lang.GroovyClassLoader;
 import groovy.transform.CompileStatic;
+import info.vividcode.jagglate.TemplateInstructionProcessor.InvalidInstruction;
 
 import java.io.IOException;
 import java.util.AbstractMap;
@@ -212,7 +213,12 @@ class TemplateClassLoaderImpl extends GroovyClassLoader implements TemplateClass
                     if (isLineCode) sb.append("out << \"\\n\"\n");
                 } else if (':' == groovyCode.charAt(0)) {
                     String templateInstruction = groovyCode.substring(1);
-                    mTemplateInstructionProcessor.process(sb, templateInstruction);
+                    try {
+                        mTemplateInstructionProcessor.process(sb, templateInstruction);
+                    } catch (InvalidInstruction e) {
+                        // TODO: Error handling
+                        throw new RuntimeException(e);
+                    }
                 } else {
                     sb.append(groovyCode).append('\n');
                 }

@@ -16,6 +16,8 @@ limitations under the License.
 
 package info.vividcode.jagglate;
 
+import info.vividcode.jagglate.TemplateInstructionProcessor.InvalidInstruction.Type;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,9 +32,27 @@ import org.codehaus.groovy.ast.expr.MapExpression;
 import org.codehaus.groovy.ast.expr.MethodCallExpression;
 import org.codehaus.groovy.ast.stmt.BlockStatement;
 import org.codehaus.groovy.ast.stmt.ExpressionStatement;
+import org.codehaus.groovy.control.CompilationFailedException;
 import org.codehaus.groovy.control.CompilePhase;
 
 class TemplateInstructionProcessor {
+
+    static class InvalidInstruction extends Exception {
+        private static final long serialVersionUID = 1L;
+        public enum Type {
+            UNKNOWN_INSTRUCTION,
+            COMPILE_ERROR,
+        }
+        public final Type type;
+        InvalidInstruction(Type t, String message) {
+            super(message);
+            type = t;
+        }
+        InvalidInstruction(Type t, Throwable cause) {
+            super(cause);
+            type = t;
+        }
+    }
 
     private final TemplateClassLoader mTemplateClassLoader;
 
@@ -40,10 +60,15 @@ class TemplateInstructionProcessor {
         mTemplateClassLoader = loader;
     }
 
-    void process(StringBuilder sb, String templateInstruction) {
+    void process(StringBuilder sb, String templateInstruction) throws InvalidInstruction {
         System.out.println(templateInstruction);
-        List<ASTNode> nodes = new AstBuilder().buildFromString(
-                CompilePhase.SEMANTIC_ANALYSIS, templateInstruction);
+        List<ASTNode> nodes;
+        try {
+            nodes = new AstBuilder().buildFromString(
+                    CompilePhase.SEMANTIC_ANALYSIS, templateInstruction);
+        } catch (CompilationFailedException e) {
+            throw new InvalidInstruction(Type.COMPILE_ERROR, e);
+        }
         System.out.println(nodes);
         BlockStatement block = (BlockStatement) nodes.get(0);
         ExpressionStatement exStat = (ExpressionStatement) block.getStatements().get(0);
@@ -52,6 +77,8 @@ class TemplateInstructionProcessor {
         MethodCallExpression methodCall = (MethodCallExpression) exp;
         if ("include".equals(methodCall.getMethodAsString())) {
             processInclude(sb, templateInstruction, methodCall);
+        } else {
+            throw new InvalidInstruction(Type.UNKNOWN_INSTRUCTION, "Unknown instruction: " + methodCall.getMethodAsString());
         }
     }
 
