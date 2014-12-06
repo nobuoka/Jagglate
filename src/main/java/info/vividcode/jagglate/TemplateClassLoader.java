@@ -76,6 +76,7 @@ class TemplateClassLoader extends GroovyClassLoader {
         int pos = 0;
         while (m.find()) {
             sb.append(str.substring(pos, m.start()));
+            if (m.start() != 0) sb.append('_');
             sb.append(m.group().toLowerCase(Locale.US));
             pos = m.end();
         }
