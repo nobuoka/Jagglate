@@ -194,7 +194,7 @@ class TemplateClassLoaderImpl extends GroovyClassLoader implements TemplateClass
         Matcher m = p.matcher(templateStr);
         int pos = 0;
         while (m.find()) {
-            putRawTest(sb, templateStr.substring(pos, m.start()));
+            putRawText(sb, templateStr.substring(pos, m.start()));
             boolean isLineCode = false;
             String groovyCode = null;
             if (m.group(1) != null) {
@@ -225,19 +225,20 @@ class TemplateClassLoaderImpl extends GroovyClassLoader implements TemplateClass
             }
             pos = m.end();
         }
-        putRawTest(sb, templateStr.substring(pos));
+        putRawText(sb, templateStr.substring(pos));
 
         sb.append("  }\n");
         sb.append("}");
         return sb.toString();
     }
 
-    static void putRawTest(StringBuilder sb, String rowString) {
-        String escaped = rowString;
-        // ["\$\\] => \$1
+    static void putRawText(StringBuilder sb, String rawText) {
+        String escaped = rawText;
+        // `"` => `\"`, `\` => `\\`, `$` => `\$`
         escaped = escaped.replaceAll("([\"\\$\\\\])", "\\\\$1");
-        // CR and LF
+        // LF => `\n`
         escaped = escaped.replaceAll("\n", "\\\\n");
+        // CR => `\r`
         escaped = escaped.replaceAll("\r", "\\\\r");
         sb.append("    out << \"").append(escaped).append("\"\n");
     }
