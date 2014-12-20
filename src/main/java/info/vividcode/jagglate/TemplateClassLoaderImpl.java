@@ -30,54 +30,7 @@ import java.util.regex.Pattern;
 
 class TemplateClassLoaderImpl extends GroovyClassLoader implements TemplateClassLoader {
 
-    static String classNamePrefix = "templates.";
-    static String pathPrefix = "";
-
-    public static String convertPathToClassName(String path) {
-        String prefix = path.substring(0, pathPrefix.length());
-        if (!prefix.equals(pathPrefix)) {
-            throw new RuntimeException("invalid path");
-        }
-        path = path.substring(pathPrefix.length());
-
-        StringBuilder sb = new StringBuilder();
-        String[] pp = path.split("/");
-        String fileName = pp[pp.length - 1];
-        for (int i = 0; i < pp.length - 1; i++) {
-            sb.append(pp[i]).append('.');
-        }
-        String[] ff = fileName.split("\\.");
-        boolean isFirst = true;
-        for (String f : ff) {
-            if (!isFirst) sb.append('$');
-            sb.append(TemplateClasses.camelize(f));
-            isFirst = false;
-        }
-        return classNamePrefix + sb.toString();
-    }
-
-    public static String convertClassNameToPath(String className) {
-        String prefix = className.substring(0, classNamePrefix.length());
-        if (!prefix.equals(classNamePrefix)) {
-            throw new RuntimeException("invalid className");
-        }
-        className = className.substring(classNamePrefix.length());
-
-        StringBuilder sb = new StringBuilder();
-        String[] cc = className.split("\\.");
-        String localClassName = cc[cc.length - 1];
-        for (int i = 0; i < cc.length - 1; i++) {
-            sb.append(cc[i]).append('/');
-        }
-        String[] ff = localClassName.split("\\$");
-        boolean isFirst = true;
-        for (String f : ff) {
-            if (!isFirst) sb.append('.');
-            sb.append(TemplateClasses.underscore(f));
-            isFirst = false;
-        }
-        return pathPrefix + sb.toString();
-    }
+    TemplateIdentifierConverter mConv = new TemplateIdentifierConverter();
 
     public TemplateClassLoaderImpl(ClassLoader parentClassLoader, TemplateStringLoader templateStringLoader) {
         super(parentClassLoader);
@@ -88,14 +41,14 @@ class TemplateClassLoaderImpl extends GroovyClassLoader implements TemplateClass
     @Override
     @SuppressWarnings("unchecked")
     public Class<? extends JagglateGenerator> loadTemplateClass(String path) throws ClassNotFoundException {
-        String className = convertPathToClassName(path);
+        String className = mConv.convertPathToClassName(path);
         return (Class<? extends JagglateGenerator>) loadClass(className);
     }
 
     @Override
     protected Class<?> findClass(String name) throws ClassNotFoundException {
-        if (name.indexOf(classNamePrefix) == 0) {
-            String filePath = convertClassNameToPath(name);
+        if (name.indexOf(mConv.classNamePrefix) == 0) {
+            String filePath = mConv.convertClassNameToPath(name);
             List<Entry<String, String>> templateArgTypes = new ArrayList<>();
             String templateSourceBody;
             try {
