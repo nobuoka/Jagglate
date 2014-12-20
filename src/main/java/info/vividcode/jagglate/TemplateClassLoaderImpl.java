@@ -73,7 +73,6 @@ class TemplateClassLoaderImpl extends GroovyClassLoader implements TemplateClass
     public String loadAndParseTemplateFromPath(
             String templatePath, List<Entry<String, String>> templateArgTypesDest
             ) throws IOException {
-        System.out.println("loadAndParseTemplateFromPath : " + templatePath);
         String templateSourceStr = mTemplateStringLoader.load(templatePath);
         String templateSourceBody = parseTemplateStr(templateSourceStr, templateArgTypesDest);
         return templateSourceBody;

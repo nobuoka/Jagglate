@@ -61,7 +61,6 @@ class TemplateInstructionProcessor {
     }
 
     void process(StringBuilder sb, String templateInstruction) throws InvalidInstruction {
-        System.out.println(templateInstruction);
         List<ASTNode> nodes;
         try {
             nodes = new AstBuilder().buildFromString(
@@ -69,7 +68,6 @@ class TemplateInstructionProcessor {
         } catch (CompilationFailedException e) {
             throw new InvalidInstruction(Type.COMPILE_ERROR, e);
         }
-        System.out.println(nodes);
         BlockStatement block = (BlockStatement) nodes.get(0);
         ExpressionStatement exStat = (ExpressionStatement) block.getStatements().get(0);
         Expression exp = exStat.getExpression();
