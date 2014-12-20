@@ -16,9 +16,6 @@ limitations under the License.
 
 package info.vividcode.jagglate;
 
-import java.io.BufferedInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.security.AccessController;
@@ -38,21 +35,8 @@ public class JagglateEngine {
     }
 
     public static JagglateEngine create(final ClassLoader parentClassLoader) {
-        TemplateStringLoader templateStringLoader = new TemplateStringLoader() {
-            @Override
-            public String load(String path) throws IOException {
-                ClassLoader l = parentClassLoader;
-                try (BufferedInputStream bis = new BufferedInputStream(l.getResourceAsStream(path))) {
-                    byte[] bb = new byte[1024];
-                    ByteArrayOutputStream out = new ByteArrayOutputStream();
-                    int count;
-                    while ((count = bis.read(bb)) != -1) {
-                        out.write(bb, 0, count);
-                    }
-                    return new String(out.toByteArray(), TEMPLATE_SOURCE_FILE_CHARSET);
-                }
-            }
-        };
+        TemplateStringLoader templateStringLoader = new TemplateStringResourceLoader(
+                TEMPLATE_SOURCE_FILE_CHARSET, parentClassLoader, "");
         return new JagglateEngine(parentClassLoader, templateStringLoader);
     }
 
