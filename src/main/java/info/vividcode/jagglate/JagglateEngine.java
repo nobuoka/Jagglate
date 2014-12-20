@@ -38,7 +38,7 @@ public class JagglateEngine {
     }
 
     public static JagglateEngine create(final ClassLoader parentClassLoader) {
-        JagglateFileLoader fileLoader = new JagglateFileLoader() {
+        TemplateStringLoader templateStringLoader = new TemplateStringLoader() {
             @Override
             public String load(String path) throws IOException {
                 ClassLoader l = parentClassLoader;
@@ -53,14 +53,14 @@ public class JagglateEngine {
                 }
             }
         };
-        return new JagglateEngine(parentClassLoader, fileLoader);
+        return new JagglateEngine(parentClassLoader, templateStringLoader);
     }
 
-    private JagglateEngine(final ClassLoader parentClassLoader, final JagglateFileLoader fileLoader) {
+    private JagglateEngine(final ClassLoader parentClassLoader, final TemplateStringLoader templateStringLoader) {
         final TemplateClassLoader templateClassLoader = AccessController.doPrivileged(new PrivilegedAction<TemplateClassLoader>() {
             @Override
             public TemplateClassLoader run() {
-                return new TemplateClassLoaderImpl(parentClassLoader, fileLoader);
+                return new TemplateClassLoaderImpl(parentClassLoader, templateStringLoader);
             }
         });
         mTemplateClassLoader = templateClassLoader;

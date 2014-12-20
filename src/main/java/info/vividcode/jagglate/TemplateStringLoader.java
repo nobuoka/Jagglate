@@ -18,7 +18,7 @@ package info.vividcode.jagglate;
 
 import java.io.IOException;
 
-public interface JagglateFileLoader {
+public interface TemplateStringLoader {
 
     String load(String path) throws IOException;
 

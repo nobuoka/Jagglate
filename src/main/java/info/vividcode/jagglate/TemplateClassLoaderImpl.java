@@ -79,9 +79,9 @@ class TemplateClassLoaderImpl extends GroovyClassLoader implements TemplateClass
         return pathPrefix + sb.toString();
     }
 
-    public TemplateClassLoaderImpl(ClassLoader parentClassLoader, JagglateFileLoader fileLoader) {
+    public TemplateClassLoaderImpl(ClassLoader parentClassLoader, TemplateStringLoader templateStringLoader) {
         super(parentClassLoader);
-        mTemplateFileLoader = fileLoader;
+        mTemplateStringLoader = templateStringLoader;
         mTemplateInstructionProcessor = new TemplateInstructionProcessor(this);
     }
 
@@ -114,14 +114,14 @@ class TemplateClassLoaderImpl extends GroovyClassLoader implements TemplateClass
         return super.findClass(name);
     }
 
-    private final JagglateFileLoader mTemplateFileLoader;
+    private final TemplateStringLoader mTemplateStringLoader;
     private final TemplateInstructionProcessor mTemplateInstructionProcessor;
 
     public String loadAndParseTemplateFromPath(
             String templatePath, List<Entry<String, String>> templateArgTypesDest
             ) throws IOException {
         System.out.println("loadAndParseTemplateFromPath : " + templatePath);
-        String templateSourceStr = mTemplateFileLoader.load(templatePath);
+        String templateSourceStr = mTemplateStringLoader.load(templatePath);
         String templateSourceBody = parseTemplateStr(templateSourceStr, templateArgTypesDest);
         return templateSourceBody;
     }
