@@ -1,0 +1,113 @@
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.0'
+    }
+}
+
+apply plugin: 'java'
+apply plugin: 'maven-publish'
+apply plugin: 'com.jfrog.bintray'
+
+group = 'info.vividcode'
+version = '0.1.0-alpha'
+
+description = "Template engine for Java and Groovy application."
+
+sourceCompatibility = 1.7
+targetCompatibility = 1.7
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
+
+def javaApiUrl = 'http://docs.oracle.com/javase/8/docs/api/'
+tasks.withType(Javadoc) {
+    options.encoding = 'UTF-8'
+    options.links(javaApiUrl)
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile 'org.codehaus.groovy:groovy:2.3.+'
+    compile 'org.codehaus.groovy:groovy-templates:2.3.+'
+
+    testCompile 'junit:junit:4.+'
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from 'build/docs/javadoc'
+}
+
+task sourcesJar(type: Jar) {
+    from sourceSets.main.allSource
+    classifier = 'sources'
+}
+
+def pomConfig = {
+    description 'Template engine for Java and Groovy application.'
+    url 'https://github.com/nobuoka/Jagglate'
+    licenses {
+        license {
+            name "The Apache Software License, Version 2.0"
+            url "http://www.apache.org/licenses/LICENSE-2.0.txt"
+            distribution "repo"
+        }
+    }
+    developers {
+        developer {
+            id "nobuoka"
+            name "NOBUOKA Yu"
+            email "nobuoka+dev@vividcode.info"
+        }
+    }
+    scm {
+        connection "scm:git:https://github.com/nobuoka/Jagglate.git"
+        developerConnection "scm:git:git@github.com:nobuoka/Jagglate.git"
+        url "https://github.com/nobuoka/Jagglate"
+    }
+    issueManagement {
+        url "https://github.com/nobuoka/Jagglate/issues"
+    }
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            artifactId 'jagglate'
+
+            from components.java
+            artifact sourcesJar
+            artifact javadocJar
+            pom.withXml {
+                def root = asNode()
+                root.children().last() + pomConfig
+            }
+        }
+    }
+}
+
+bintray {
+    if (project.hasProperty('bintrayUser')) {
+        user = project.bintrayUser
+    } else {
+        logger.warn("Project property `bintrayUser` must be set if you upload archives to Bintray")
+    }
+    if (project.hasProperty('bintrayKey')) {
+        key = project.bintrayKey
+    } else {
+        logger.warn("Project property `bintrayKey` must be set if you upload archives to Bintray")
+    }
+
+    publications = ['mavenJava']
+    pkg {
+        repo = 'maven'
+        name = 'Jagglate'
+    }
+}
