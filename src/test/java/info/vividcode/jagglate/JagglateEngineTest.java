@@ -17,6 +17,9 @@ limitations under the License.
 package info.vividcode.jagglate;
 
 import static org.junit.Assert.*;
+
+import java.nio.charset.StandardCharsets;
+
 import groovy.text.Template;
 
 import org.junit.Test;
@@ -25,10 +28,22 @@ public class JagglateEngineTest {
 
     @Test
     public void useSimpleTemplate() {
-        JagglateEngine engine = JagglateEngine.create(getClass().getClassLoader());
+        TemplateStringLoader tsLoader =
+                new TemplateStringResourceLoader(StandardCharsets.UTF_8, "");
+        JagglateEngine engine = JagglateEngine.create(tsLoader);
         Template myTemplate = engine.createTemplate("simple_template.tpl.html");
         assertEquals("Simple template can be make without parameter",
                 "Simple template", myTemplate.make().toString());
+    }
+
+    @Test
+    public void usePathPrefix() {
+        TemplateStringLoader tsLoader =
+                new TemplateStringResourceLoader(StandardCharsets.UTF_8, "test_to_path_prefix/deep/prefix/");
+        JagglateEngine engine = JagglateEngine.create(tsLoader);
+        Template myTemplate = engine.createTemplate("part_of_package/pp/template.tpl.html");
+        assertEquals("Path prefix is enabled.",
+                "Path prefix test", myTemplate.make().toString());
     }
 
 }

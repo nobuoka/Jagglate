@@ -30,6 +30,10 @@ public class TemplateStringResourceLoader implements TemplateStringLoader {
 
     private final String mPathPrefix;
 
+    public TemplateStringResourceLoader(Charset fileCharset, String pathPrefix) {
+        this(fileCharset, TemplateStringResourceLoader.class.getClassLoader(), pathPrefix);
+    }
+
     public TemplateStringResourceLoader(Charset fileCharset, ClassLoader cl, String pathPrefix) {
         mFileCharset = fileCharset;
         mResourceLoader = cl;

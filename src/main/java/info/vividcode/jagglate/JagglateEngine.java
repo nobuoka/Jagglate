@@ -16,8 +16,6 @@ limitations under the License.
 
 package info.vividcode.jagglate;
 
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 
@@ -25,19 +23,14 @@ import groovy.text.Template;
 
 public class JagglateEngine {
 
-    private static final Charset TEMPLATE_SOURCE_FILE_CHARSET = StandardCharsets.UTF_8;
-
     private final TemplateClassLoader mTemplateClassLoader;
 
-    public static JagglateEngine create() {
-        final ClassLoader parentClassLoader = JagglateEngine.class.getClassLoader();
-        return create(parentClassLoader);
+    public static JagglateEngine create(TemplateStringLoader tsLoader) {
+        return JagglateEngine.create(JagglateEngine.class.getClassLoader(), tsLoader);
     }
 
-    public static JagglateEngine create(final ClassLoader parentClassLoader) {
-        TemplateStringLoader templateStringLoader = new TemplateStringResourceLoader(
-                TEMPLATE_SOURCE_FILE_CHARSET, parentClassLoader, "");
-        return new JagglateEngine(parentClassLoader, templateStringLoader);
+    public static JagglateEngine create(ClassLoader parentClassLoader, TemplateStringLoader tsLoader) {
+        return new JagglateEngine(parentClassLoader, tsLoader);
     }
 
     private JagglateEngine(final ClassLoader parentClassLoader, final TemplateStringLoader templateStringLoader) {
