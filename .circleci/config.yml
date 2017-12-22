@@ -1,0 +1,30 @@
+version: 2
+jobs:
+  build-java9:
+    docker:
+      - image: circleci/openjdk:9
+    steps:
+      - checkout
+      - run: ./gradlew build
+
+  build-java8:
+    docker:
+      - image: circleci/openjdk:8
+    steps:
+      - checkout
+      - run: ./gradlew build
+
+  build-java7:
+    docker:
+      - image: circleci/openjdk:7
+    steps:
+      - checkout
+      - run: ./gradlew build
+
+workflows:
+  version: 2
+  build:
+    jobs:
+      - build-java9
+      - build-java8
+      - build-java7
