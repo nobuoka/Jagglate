@@ -14,10 +14,12 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package info.vividcode.jagglate;
+package info.vividcode.jagglate.internal;
 
-import info.vividcode.jagglate.TemplateInstructionProcessor.InvalidInstruction;
-import info.vividcode.jagglate.TemplateInstructionProcessor.InvalidInstruction.Type;
+import info.vividcode.jagglate.JagglateGenerator;
+import info.vividcode.jagglate.internal.TemplateInstructionProcessor.InvalidInstruction;
+import info.vividcode.jagglate.internal.TemplateInstructionProcessor.InvalidInstruction.Type;
+import org.junit.Test;
 
 import java.io.PrintWriter;
 import java.util.Arrays;
@@ -25,9 +27,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.*;
-
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 public class TemplateInstructionProcessorTest {
 

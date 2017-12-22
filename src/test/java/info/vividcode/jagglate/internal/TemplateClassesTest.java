@@ -14,11 +14,11 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package info.vividcode.jagglate;
-
-import static org.junit.Assert.*;
+package info.vividcode.jagglate.internal;
 
 import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
 
 public class TemplateClassesTest {
 

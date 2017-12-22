@@ -14,12 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package info.vividcode.jagglate;
+package info.vividcode.jagglate.internal;
 
-import java.io.IOException;
-
-public interface TemplateStringLoader {
-
-    String load(String path) throws IOException;
-
+public class TemplateStaticMethods {
 }

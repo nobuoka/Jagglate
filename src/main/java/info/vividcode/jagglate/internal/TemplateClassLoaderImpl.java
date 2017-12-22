@@ -14,13 +14,14 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package info.vividcode.jagglate;
+package info.vividcode.jagglate.internal;
 
 import groovy.lang.GroovyClassLoader;
+import info.vividcode.jagglate.JagglateGenerator;
 
 import java.io.IOException;
 
-class TemplateClassLoaderImpl extends GroovyClassLoader implements TemplateClassLoader {
+public class TemplateClassLoaderImpl extends GroovyClassLoader implements TemplateClassLoader {
 
     private final TemplateIdentifierConverter mConv = new TemplateIdentifierConverter();
 

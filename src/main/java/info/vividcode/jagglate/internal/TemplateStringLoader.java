@@ -14,11 +14,12 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package info.vividcode.jagglate;
+package info.vividcode.jagglate.internal;
 
-interface TemplateClassLoader {
+import java.io.IOException;
 
-    Class<? extends JagglateGenerator> loadTemplateClass(String path)
-            throws ClassNotFoundException;
+public interface TemplateStringLoader {
+
+    String load(String path) throws IOException;
 
 }

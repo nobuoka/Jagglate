@@ -16,14 +16,14 @@ limitations under the License.
 
 package info.vividcode.jagglate;
 
+import groovy.lang.Writable;
+import groovy.text.Template;
+
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.Collections;
 import java.util.Map;
-
-import groovy.lang.Writable;
-import groovy.text.Template;
 
 class JagglateTemplate implements Template {
 

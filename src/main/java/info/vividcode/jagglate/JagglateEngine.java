@@ -16,11 +16,14 @@ limitations under the License.
 
 package info.vividcode.jagglate;
 
+import groovy.text.Template;
+import info.vividcode.jagglate.internal.TemplateClassLoader;
+import info.vividcode.jagglate.internal.TemplateClassLoaderImpl;
+import info.vividcode.jagglate.internal.TemplateStringLoader;
+
 import java.lang.reflect.InvocationTargetException;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
-
-import groovy.text.Template;
 
 public class JagglateEngine {
 

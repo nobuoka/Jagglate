@@ -14,7 +14,13 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package info.vividcode.jagglate;
+package info.vividcode.jagglate.internal;
 
-public class TemplateStaticMethods {
+import info.vividcode.jagglate.JagglateGenerator;
+
+public interface TemplateClassLoader {
+
+    Class<? extends JagglateGenerator> loadTemplateClass(String path)
+            throws ClassNotFoundException;
+
 }

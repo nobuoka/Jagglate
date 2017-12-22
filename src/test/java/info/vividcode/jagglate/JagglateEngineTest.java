@@ -16,13 +16,14 @@ limitations under the License.
 
 package info.vividcode.jagglate;
 
-import static org.junit.Assert.*;
+import groovy.text.Template;
+import info.vividcode.jagglate.internal.TemplateStringLoader;
+import info.vividcode.jagglate.internal.TemplateStringResourceLoader;
+import org.junit.Test;
 
 import java.nio.charset.StandardCharsets;
 
-import groovy.text.Template;
-
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
 
 public class JagglateEngineTest {
 

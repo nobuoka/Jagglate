@@ -14,26 +14,21 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package info.vividcode.jagglate;
+package info.vividcode.jagglate.internal;
 
-import info.vividcode.jagglate.TemplateInstructionProcessor.InvalidInstruction.Type;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import info.vividcode.jagglate.JagglateGenerator;
+import info.vividcode.jagglate.internal.TemplateInstructionProcessor.InvalidInstruction.Type;
 import org.codehaus.groovy.ast.ASTNode;
 import org.codehaus.groovy.ast.builder.AstBuilder;
-import org.codehaus.groovy.ast.expr.ArgumentListExpression;
-import org.codehaus.groovy.ast.expr.ConstantExpression;
-import org.codehaus.groovy.ast.expr.Expression;
-import org.codehaus.groovy.ast.expr.MapEntryExpression;
-import org.codehaus.groovy.ast.expr.MapExpression;
-import org.codehaus.groovy.ast.expr.MethodCallExpression;
+import org.codehaus.groovy.ast.expr.*;
 import org.codehaus.groovy.ast.stmt.BlockStatement;
 import org.codehaus.groovy.ast.stmt.ExpressionStatement;
 import org.codehaus.groovy.control.CompilationFailedException;
 import org.codehaus.groovy.control.CompilePhase;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 class TemplateInstructionProcessor {
 
