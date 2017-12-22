@@ -16,6 +16,7 @@ limitations under the License.
 
 package info.vividcode.jagglate;
 
+import java.lang.reflect.InvocationTargetException;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 
@@ -51,8 +52,8 @@ public class JagglateEngine {
             throw new RuntimeException(e);
         }
         try {
-            return new JagglateTemplate(clazz.newInstance());
-        } catch (InstantiationException | IllegalAccessException e) {
+            return new JagglateTemplate(clazz.getDeclaredConstructor().newInstance());
+        } catch (NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException e) {
             throw new RuntimeException(e);
         }
     }
