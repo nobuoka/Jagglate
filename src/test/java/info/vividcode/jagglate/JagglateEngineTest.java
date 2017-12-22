@@ -22,8 +22,11 @@ import info.vividcode.jagglate.internal.TemplateStringResourceLoader;
 import org.junit.Test;
 
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
 
+import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 
 public class JagglateEngineTest {
 
@@ -33,8 +36,24 @@ public class JagglateEngineTest {
                 new TemplateStringResourceLoader(StandardCharsets.UTF_8, "");
         JagglateEngine engine = JagglateEngine.create(tsLoader);
         Template myTemplate = engine.createTemplate("simple_template.tpl.html");
-        assertEquals("Simple template can be make without parameter",
-                "Simple template", myTemplate.make().toString());
+
+        String output = myTemplate.make(new HashMap<String, String>() {{ put("message", "hello"); }}).toString();
+
+        assertThat("Simple template can be make without parameter",
+                output, equalTo("Simple template\nok hello\n"));
+    }
+
+    @Test
+    public void includeTemplate() {
+        TemplateStringLoader tsLoader =
+                new TemplateStringResourceLoader(StandardCharsets.UTF_8, "");
+        JagglateEngine engine = JagglateEngine.create(tsLoader);
+        Template myTemplate = engine.createTemplate("including_template.tpl.html");
+
+        String output = myTemplate.make(new HashMap<String, String>() {{ put("message", "hello"); }}).toString();
+
+        assertThat("Simple template can be make without parameter",
+                output, equalTo("Including Simple template :\nSimple template\nok hello\n\n"));
     }
 
     @Test
