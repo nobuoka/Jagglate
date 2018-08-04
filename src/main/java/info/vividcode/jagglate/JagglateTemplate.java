@@ -25,21 +25,15 @@ import java.io.Writer;
 import java.util.Collections;
 import java.util.Map;
 
-class JagglateTemplate implements Template {
+class JagglateTemplate<T> {
 
-    private final JagglateGenerator mSource;
+    private final JagglateGenerator<T> mSource;
 
-    public JagglateTemplate(JagglateGenerator source) {
+    public JagglateTemplate(JagglateGenerator<T> source) {
         mSource = source;
     }
 
-    @Override
-    public Writable make() {
-        return make(Collections.EMPTY_MAP);
-    }
-
-    @Override
-    public Writable make(@SuppressWarnings("rawtypes") final Map binding) {
+    public Writable make(final T parameter) {
         return new Writable() {
             /**
              * Write the template document with the set binding applied to the writer.
@@ -50,7 +44,7 @@ class JagglateTemplate implements Template {
             @Override
             public Writer writeTo(Writer writer) {
                 PrintWriter pw = new PrintWriter(writer);
-                mSource.generate(binding, pw);
+                mSource.generate(parameter, pw);
                 pw.flush();
                 return writer;
             }

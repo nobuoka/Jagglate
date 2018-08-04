@@ -20,7 +20,7 @@ import info.vividcode.jagglate.JagglateGenerator;
 
 public interface TemplateClassLoader {
 
-    Class<? extends JagglateGenerator> loadTemplateClass(String path)
+    <T> Class<? extends JagglateGenerator<T>> loadTemplateClass(String path, Class<T> parameterClass)
             throws ClassNotFoundException;
 
 }

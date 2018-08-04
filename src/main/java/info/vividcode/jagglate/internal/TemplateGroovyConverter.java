@@ -41,15 +41,15 @@ class TemplateGroovyConverter {
      * @param templateSourceStr Template string.
      * @return Groovy source code converted from a template string.
      */
-    public String convertTemplateStringToGroovyCode(String name, String templateSourceStr) {
-        List<Map.Entry<String, String>> templateArgTypes = new ArrayList<>();
+    public String convertTemplateStringToGroovyCode(String name, String templateSourceStr, String parameterClassName) {
+        List<Map.Entry<String, String>> templateArgTypes = new ArrayList<>(); // 不要になってる。
         String templateSourceBody = parseTemplateString(templateSourceStr, templateArgTypes);
         int s = name.lastIndexOf('.');
         String packageName = name.substring(0, s);
         String className = name.substring(s + 1);
         return convertParsedTemplateBodyToGroovySource(
                 templateSourceBody, packageName, className,
-                templateArgTypes);
+                parameterClassName);
     }
 
     private String parseTemplateString(String templateSource, List<Map.Entry<String, String>> templateArgTypesDest) {
@@ -70,7 +70,7 @@ class TemplateGroovyConverter {
     }
 
     private String convertParsedTemplateBodyToGroovySource(String templateStr, String packageName,
-                                                           String className, List<Map.Entry<String, String>> argTypes) {
+                                                           String className, String parameterType) {
         String interfaceName = JagglateGenerator.class.getCanonicalName();
         //Class<WithLogging> anoClass = WithLogging.class;
         StringBuilder sb = new StringBuilder();
@@ -83,38 +83,14 @@ class TemplateGroovyConverter {
         sb.append("import ").append(CompileStatic.class.getCanonicalName()).append("\n");
         sb.append("import static ").append(TemplateStaticMethods.class.getCanonicalName()).append(".*;");
         sb.append("@").append(CompileStatic.class.getSimpleName()).append("\n");
-        sb.append("class ").append(className).append(" implements ").append(interfaceName).append(" {\n");
+        sb.append("class ").append(className).append(" implements ").append(interfaceName).append("<").append(parameterType).append("> {\n");
         //sb.append("  ").append(className).append(" getInstance() {\n}\n");
         sb.append("  public static java.util.List<String> PARAM_NAMES = new ArrayList<String>()\n");
-        sb.append("  static {\n");
-        for (Map.Entry<String, String> argInfo : argTypes) {
-            sb.append("    PARAM_NAMES.add(\"" + argInfo.getKey() + "\")\n");
-        }
-        sb.append("  }\n");
 
-        // void generate(Map<String, ?> args, PrintWriter out);
+        // void generate(T p, PrintWriter out);
         //sb.append("  @").append(anoClass.getCanonicalName()).append('\n');
         sb.append("  @Override\n");
-        sb.append("  void generate(Map<String, ?> args, PrintWriter out) {\n");
-        for (Map.Entry<String, String> argInfo : argTypes) {
-            String argName = argInfo.getKey();
-            String argType = argInfo.getValue();
-            sb.append("    ").append(argType).append(' ').append(argName).append(" = (").append(argType).append(") args.get('" + argName + "');\n");
-        }
-        sb.append("    generate(out");
-        for (Map.Entry<String, String> argInfo : argTypes) {
-            String argName = argInfo.getKey();
-            sb.append(", ").append(argName);
-        }
-        sb.append(")\n");
-        sb.append("  }\n");
-
-        // void generate(PrintWriter out, ArgType1 arg1, ArgType2 arg2, ...);
-        sb.append("  void generate(PrintWriter out");
-        for (Map.Entry<String, String> argInfo : argTypes) {
-            sb.append(", ").append(argInfo.getValue()).append(' ').append(argInfo.getKey());
-        }
-        sb.append(") {\n");
+        sb.append("  void generate(").append(parameterType).append(" p, PrintWriter out) {\n");
 
         Pattern p = Pattern.compile("\\[%(.*?)%\\]|^%(.*?)(?:\\n|\\z)", Pattern.MULTILINE);
         Matcher m = p.matcher(templateStr);

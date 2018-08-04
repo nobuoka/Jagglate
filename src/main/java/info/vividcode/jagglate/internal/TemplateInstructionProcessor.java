@@ -112,7 +112,7 @@ class TemplateInstructionProcessor {
         Class<? extends JagglateGenerator> includedTemplateClass;
         try {
             // ここで load することに意味がある。
-            includedTemplateClass = mTemplateClassLoader.loadTemplateClass(templatePath);
+            includedTemplateClass = mTemplateClassLoader.loadTemplateClass(templatePath, String.class);
             @SuppressWarnings("unchecked")
             List<String> tmp =
                     (List<String>) includedTemplateClass.getField("PARAM_NAMES").get(null);

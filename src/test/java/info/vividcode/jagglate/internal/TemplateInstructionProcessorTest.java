@@ -25,7 +25,6 @@ import java.io.PrintWriter;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
@@ -33,21 +32,19 @@ import static org.junit.Assert.fail;
 public class TemplateInstructionProcessorTest {
 
     private static class MockTemplate implements JagglateGenerator {
-        @SuppressWarnings("unused")
-        public static List<String> PARAM_NAMES;
         @Override
-        public void generate(Map<String, ?> args, PrintWriter out) {}
+        public void generate(Object p, PrintWriter out) {}
     }
 
     private static class MockClassLoader implements TemplateClassLoader {
         @Override
-        public Class<? extends JagglateGenerator> loadTemplateClass(String path)
+        public <T> Class<? extends JagglateGenerator<T>> loadTemplateClass(String path, Class<T> parameterClass)
                 throws ClassNotFoundException {
-            if ("mock_template".equals(path)) {
-                return MockTemplate.class;
-            } else {
+//            if ("mock_template".equals(path)) {
+//                return (Class<? extends JagglateGenerator<T>>) MockTemplate.class;
+//            } else {
                 throw new ClassNotFoundException();
-            }
+//            }
         }
     }
 
@@ -57,7 +54,7 @@ public class TemplateInstructionProcessorTest {
                 new TemplateInstructionProcessor(new MockClassLoader());
         class TestProc {
             void proc(List<String> paramNames, String instructionParams, String expectedParams) throws InvalidInstruction {
-                MockTemplate.PARAM_NAMES = paramNames;
+                //MockTemplate.PARAM_NAMES = paramNames;
                 StringBuilder sb = new StringBuilder();
                 proc.process(sb, "include \"mock_template\"" + instructionParams);
                 assertEquals("The `generate` method call is output.",

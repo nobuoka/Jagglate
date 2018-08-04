@@ -18,9 +18,10 @@ package info.vividcode.jagglate.internal;
 
 class TemplateIdentifierConverter {
 
-    public final String classNamePrefix = "templates.";
+    public final String classNamePrefix = "__templates__.";
+    public final String separator = ".__with_parameter__.";
 
-    public String convertPathToClassName(String path) {
+    public String convertPathToClassName(String path, Class<?> parameterClass) {
         StringBuilder sb = new StringBuilder();
         sb.append(classNamePrefix);
 
@@ -36,6 +37,9 @@ class TemplateIdentifierConverter {
             sb.append(TemplateClasses.camelize(f));
             isFirst = false;
         }
+
+        sb.append(separator).append(parameterClass.getCanonicalName());
+
         return sb.toString();
     }
 
@@ -44,7 +48,11 @@ class TemplateIdentifierConverter {
         if (!prefix.equals(classNamePrefix)) {
             throw new RuntimeException("invalid className");
         }
-        className = className.substring(classNamePrefix.length());
+        int separatorIndex = className.indexOf(separator);
+        if (separatorIndex < 0) {
+            throw new RuntimeException("invalid className");
+        }
+        className = className.substring(classNamePrefix.length(), separatorIndex);
 
         StringBuilder sb = new StringBuilder();
         String[] cc = className.split("\\.");
@@ -60,6 +68,18 @@ class TemplateIdentifierConverter {
             isFirst = false;
         }
         return sb.toString();
+    }
+
+    public String convertClassNameToParameterClassName(String className) {
+        String prefix = className.substring(0, classNamePrefix.length());
+        if (!prefix.equals(classNamePrefix)) {
+            throw new RuntimeException("invalid className");
+        }
+        int separatorIndex = className.indexOf(separator);
+        if (separatorIndex < 0) {
+            throw new RuntimeException("invalid className");
+        }
+        return className.substring(separatorIndex + separator.length());
     }
 
 }

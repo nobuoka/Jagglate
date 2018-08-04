@@ -20,10 +20,55 @@ import groovy.lang.GroovyClassLoader;
 import info.vividcode.jagglate.JagglateGenerator;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Objects;
 
 public class TemplateClassLoaderImpl extends GroovyClassLoader implements TemplateClassLoader {
 
     private final TemplateIdentifierConverter mConv = new TemplateIdentifierConverter();
+
+    private static class TemplateIdentifierStore {
+        private final HashMap<Id, String> idToClassName = new HashMap<>();
+        private final HashMap<String, Id> classNameToId = new HashMap<>();
+        private int nextNumber = 1;
+
+        public Id getIdOrNull(String className) {
+            return classNameToId.get(className);
+        }
+
+        public synchronized String getOrGenerateClassName(String templatePath, Class<?> parameterClass) {
+            Id id = new Id(templatePath, parameterClass);
+            if (!idToClassName.containsKey(id)) {
+                String className = "__template__.Template" + nextNumber++;
+                idToClassName.put(id, className);
+                classNameToId.put(className, id);
+            }
+            return idToClassName.get(id);
+        }
+
+        private static final class Id {
+            private final String templatePath;
+            private final Class<?> parameterClass;
+
+            private Id(String templatePath, Class<?> parameterClass) {
+                this.templatePath = templatePath;
+                this.parameterClass = parameterClass;
+            }
+
+            @Override
+            public int hashCode() {
+                return Objects.hash(templatePath, parameterClass);
+            }
+
+            @Override
+            public boolean equals(Object obj) {
+                return obj instanceof Id &&
+                        templatePath.equals(((Id) obj).templatePath) &&
+                        parameterClass.equals(((Id) obj).parameterClass);
+            }
+        }
+    }
+    private final TemplateIdentifierStore templateIdentifierStore = new TemplateIdentifierStore();
 
     private final TemplateStringLoader mTemplateStringLoader;
 
@@ -37,15 +82,20 @@ public class TemplateClassLoaderImpl extends GroovyClassLoader implements Templa
 
     @Override
     @SuppressWarnings("unchecked")
-    public Class<? extends JagglateGenerator> loadTemplateClass(String path) throws ClassNotFoundException {
-        String className = mConv.convertPathToClassName(path);
-        return (Class<? extends JagglateGenerator>) loadClass(className);
+    public <T> Class<? extends JagglateGenerator<T>> loadTemplateClass(String path, Class<T> parameterClass)
+            throws ClassNotFoundException {
+
+        String className = templateIdentifierStore.getOrGenerateClassName(path, parameterClass);
+        return (Class<? extends JagglateGenerator<T>>) loadClass(className);
     }
 
     @Override
     protected Class<?> findClass(String name) throws ClassNotFoundException {
-        if (name.indexOf(mConv.classNamePrefix) == 0) {
-            String filePath = mConv.convertClassNameToPath(name);
+        TemplateIdentifierStore.Id id = templateIdentifierStore.getIdOrNull(name);
+        if (id != null) {
+            String filePath = id.templatePath;
+            String parameterClassName = id.parameterClass.getCanonicalName();
+
             String templateSourceStr;
             try {
                 templateSourceStr = mTemplateStringLoader.load(filePath);
@@ -53,7 +103,8 @@ public class TemplateClassLoaderImpl extends GroovyClassLoader implements Templa
                 throw new ClassNotFoundException("", e);
             }
 
-            String templateGroovySrc = templateGroovyConverter.convertTemplateStringToGroovyCode(name, templateSourceStr);
+            String templateGroovySrc =
+                    templateGroovyConverter.convertTemplateStringToGroovyCode(name, templateSourceStr, parameterClassName);
             return parseClass(templateGroovySrc);
         }
         return super.findClass(name);

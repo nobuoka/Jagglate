@@ -47,15 +47,15 @@ public class JagglateEngine {
         mTemplateClassLoader = templateClassLoader;
     }
 
-    public Template createTemplate(String templateFilePath) {
-        Class<? extends JagglateGenerator> clazz;
+    public <T> JagglateTemplate<T> createTemplate(String templateFilePath, Class<T> parameterClass) {
+        Class<? extends JagglateGenerator<T>> clazz;
         try {
-            clazz = mTemplateClassLoader.loadTemplateClass(templateFilePath);
+            clazz = mTemplateClassLoader.loadTemplateClass(templateFilePath, parameterClass);
         } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
         try {
-            return new JagglateTemplate(clazz.getDeclaredConstructor().newInstance());
+            return new JagglateTemplate<T>(clazz.getDeclaredConstructor().newInstance());
         } catch (NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException e) {
             throw new RuntimeException(e);
         }
